@@ -1,0 +1,26 @@
+<html>
+  <head>
+    <script type="text/javascript" src="gbar.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['bar']});
+      google.charts.setOnLoadCallback(drawStuff);
+
+      function drawStuff() {
+        var data = new google.visualization.arrayToDataTable( gline );
+
+        var options = {
+          width: 6000,
+          height: 3100
+
+        };
+
+        var chart = new google.charts.Bar(document.getElementById('dual_x_div'));
+        chart.draw(data, options);
+      }
+    </script>
+  </head>
+  <body>
+    <div id="dual_x_div" style="width: 1300px; height: 600px;"></div>
+  </body>
+</html>
