@@ -168,7 +168,7 @@ except:
 
 layout = [[sg.Text('Enter the name for the Excel file.', justification='center', size=(35,1))],
     [sg.Text('A different name every time.', justification='center', size=(35,1))],
-    [sg.Text(' '*21), sg.InputText(key='-IN-', size=(12, 0))],
+    [sg.Text(' '*21), sg.InputText(key='-IN-', size=(12, 0), do_not_clear=False)],
     [sg.Text(' '*20), sg.Submit(), sg.Button('Exit')]]
 
 window = sg.Window('Name for the Excel file.', layout, resizable=True)
