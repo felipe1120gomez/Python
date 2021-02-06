@@ -235,7 +235,6 @@ crypto_sheet.write('M1', 'TOTAL PORFOLIO IN ' + conversion, bold)
 seconds = choice * 3600
 names = list()
 try:
-
     while repeat == True or times > 0:
 
         url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
