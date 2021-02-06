@@ -10,8 +10,8 @@ import PySimpleGUI as sg
 sg.theme('Dark Black 1')
 
 layout = [[sg.Text('Enter the currency for conversion of values.', justification='center', size=(35,1))],
-    [sg.Text('e.g USD or EUR.', justification='center', size=(35,1), do_not_clear=False)],
-    [sg.Text(' '*27), sg.InputText(key='-IN-', size=(4, 0))],
+    [sg.Text('e.g USD or EUR.', justification='center', size=(35,1))],
+    [sg.Text(' '*27), sg.InputText(key='-IN-', size=(4, 0), do_not_clear=False)],
     [sg.Text(' '*20), sg.Submit(), sg.Button('Exit')]]
 
 window = sg.Window('Currency for Conversion', layout, resizable=True)
