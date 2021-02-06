@@ -2,6 +2,7 @@ from requests import Request, Session
 from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
 import json
 import time
+import os
 import xlsxwriter
 import PySimpleGUI as sg
 
@@ -9,7 +10,7 @@ import PySimpleGUI as sg
 sg.theme('Dark Black 1')
 
 layout = [[sg.Text('Enter the currency for conversion of values.', justification='center', size=(35,1))],
-    [sg.Text('e.g USD or EUR.', justification='center', size=(35,1))],
+    [sg.Text('e.g USD or EUR.', justification='center', size=(35,1), do_not_clear=False)],
     [sg.Text(' '*27), sg.InputText(key='-IN-', size=(4, 0))],
     [sg.Text(' '*20), sg.Submit(), sg.Button('Exit')]]
 
@@ -191,6 +192,15 @@ while True:
             continue
 
         fileName = values['-IN-'] + '.xlsx'
+
+        try:
+            if os.path.exists(fileName):
+                raise ValueError("invalid name!")
+        except:
+            sg.popup('File already exists', fileName)
+            fileName = None
+            continue
+
         window.close()
 
 window.close()
@@ -224,129 +234,157 @@ crypto_sheet.write('M1', 'TOTAL PORFOLIO IN ' + conversion, bold)
 #The API is called.
 seconds = choice * 3600
 names = list()
-while repeat == True or times > 0:
+try:
 
-    url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
-    parameters = {
-        'start': 1,
-        'limit': 1000,#Only the first 1000 coins are taken into account.
-        'convert': conversion,
-    }
-    headers = {
-        'Accepts': 'application/json',
-        'X-CMC_PRO_API_KEY': 'Paste your API key here',#Paste your API key here.
-    }
+    while repeat == True or times > 0:
 
-    session = Session()
-    session.headers.update(headers)
+        url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
+        parameters = {
+            'start': 1,
+            'limit': 1000,#Only the first 1000 coins are taken into account.
+            'convert': conversion,
+        }
+        headers = {
+            'Accepts': 'application/json',
+            'X-CMC_PRO_API_KEY': 'Paste your API key here',#Paste your API key here.
+        }
 
-    try:
-        response = session.get(url, params = parameters)
+        session = Session()
+        session.headers.update(headers)
 
-    except (ConnectionError, Timeout, TooManyRedirects) as e:
-        print(e)
-        sg.popup('Connection Error.')
-        quit()
+        try:
+            response = session.get(url, params = parameters)
 
-    try:
-        data = json.loads(response.text)
+        except (ConnectionError, Timeout, TooManyRedirects) as e:
+            print(e)
+            sg.popup('Connection Error.')
+            quit()
 
-    except:
-        print('==== Failure To Retrieve ====')
-        print(response.text)
-        sg.popup('Failure To Retrieve.')
-        quit()
+        try:
+            data = json.loads(response.text)
 
-    if 'data' not in data :
-        print('==== The JSON file does not meet the requirements ====')
-        sg.popup('The JSON file does not meet the requirements.')
-        print(data)
-        quit()
+        except:
+            print('==== Failure To Retrieve ====')
+            print(response.text)
+            sg.popup('Failure To Retrieve.')
+            quit()
 
-    if times > 0:
-        row = 1
-    else:
-        row = len(names) + 2
+        if 'data' not in data :
+            print('==== The JSON file does not meet the requirements ====')
+            sg.popup('The JSON file does not meet the requirements.')
+            print(data)
+            quit()
 
-    portafolio_value = 0
+        if times > 0:
+            row = 1
+        else:
+            row = len(names) + 2
 
-    #We iterate for each currency in the JSON file.
-    file = data['data']
-    for key in file:
-        name = key['name']
-        symbol = key['symbol']
-        active = key['circulating_supply']
-        last = key['last_updated']
-        quote = key['quote']
-        convert = quote[conversion]
-        price = convert['price']
-        cap = convert['market_cap']
-        hour = convert['percent_change_1h']
-        day = convert['percent_change_24h']
-        week = convert['percent_change_7d']
-        vol = convert['volume_24h']
+        portafolio_value = 0
 
-        #We only add the currencies that are in the user's portfolio.
-        for key_1 in my_portafolio.keys():
-            if key_1 == symbol:
-                value = float(price) * float(my_portafolio[key_1])
+        #We iterate for each currency in the JSON file.
+        file = data['data']
+        for key in file:
+            name = key['name']
+            symbol = key['symbol']
+            active = key['circulating_supply']
+            last = key['last_updated']
+            quote = key['quote']
+            convert = quote[conversion]
+            price = convert['price']
+            cap = convert['market_cap']
+            hour = convert['percent_change_1h']
+            day = convert['percent_change_24h']
+            week = convert['percent_change_7d']
+            vol = convert['volume_24h']
 
-                crypto_sheet.write(row, 0, name)
-                crypto_sheet.write(row, 1, symbol)
-                crypto_sheet.write(row, 2, my_portafolio[key_1], money)
-                crypto_sheet.write(row, 3, price, money)
-                crypto_sheet.write(row, 4, value, money)
-                crypto_sheet.write(row, 5, str('{:.2f}'.format(hour) + '%'))
-                crypto_sheet.write(row, 6, str('{:.2f}'.format(day) + '%'))
-                crypto_sheet.write(row, 7, str('{:.2f}'.format(week) + '%'))
-                crypto_sheet.write(row, 8, cap, money)
-                crypto_sheet.write(row, 9, vol, money)
-                crypto_sheet.write(row, 10, active, money)
-                crypto_sheet.write(row, 11, last)
-                names.append(symbol)
-                portafolio_value += value
-                row += 1
+            #We only add the currencies that are in the user's portfolio.
+            for key_1 in my_portafolio.keys():
+                if key_1 == symbol:
+                    value = float(price) * float(my_portafolio[key_1])
 
-    crypto_sheet.write(row, 0, '**')
-    crypto_sheet.write(row, 12, portafolio_value, money)
-    names.append(' ')
+                    crypto_sheet.write(row, 0, name)
+                    crypto_sheet.write(row, 1, symbol)
+                    crypto_sheet.write(row, 2, my_portafolio[key_1], money)
+                    crypto_sheet.write(row, 3, price, money)
+                    crypto_sheet.write(row, 4, value, money)
+                    crypto_sheet.write(row, 5, str('{:.2f}'.format(hour) + '%'))
+                    crypto_sheet.write(row, 6, str('{:.2f}'.format(day) + '%'))
+                    crypto_sheet.write(row, 7, str('{:.2f}'.format(week) + '%'))
+                    crypto_sheet.write(row, 8, cap, money)
+                    crypto_sheet.write(row, 9, vol, money)
+                    crypto_sheet.write(row, 10, active, money)
+                    crypto_sheet.write(row, 11, last)
+                    names.append(symbol)
+                    portafolio_value += value
+                    row += 1
 
-    if repeat == True:
+        crypto_sheet.write(row, 0, '**')
+        crypto_sheet.write(row, 12, portafolio_value, money)
+        names.append(' ')
 
-        layout = [[sg.Text('The portfolio has been updated.', justification='center', size=(35,1))],
-            [sg.Text('Do you want to end the program?', justification='center', size=(35,1))],
-            [sg.Text(' '*23), sg.Button('Yes'), sg.Button('No')]]
+        if repeat == True:
 
-        window = sg.Window('Portfolio updated', layout, resizable=True)
+            layout = [[sg.Text('The portfolio has been updated.', justification='center', size=(35,1))],
+                [sg.Text('Do you want to end the program?', justification='center', size=(35,1))],
+                [sg.Text(' '*23), sg.Button('Yes'), sg.Button('No')]]
 
-        while True:
-            event, values = window.read()
+            window = sg.Window('Portfolio updated', layout, resizable=True)
 
-            if event == sg.WIN_CLOSED:
-                break
+            while True:
+                event, values = window.read()
 
-            if event == 'Yes':
-                repeat = False
-                seconds = 1
-                window.close()
+                if event == sg.WIN_CLOSED:
+                    break
 
-            elif event == 'No':
-                sg.popup('The portfolio will be updated once more.')
-                window.close()
+                if event == 'Yes':
+                    repeat = False
+                    seconds = 1
+                    window.close()
 
-        window.close()
+                elif event == 'No':
+                    sg.popup('The portfolio will be updated once more.')
+                    window.close()
 
-    else:
-        seconds = 1
+            window.close()
 
-    times -= 1
-    time.sleep(seconds)
+        else:
+            seconds = 1
 
-crypto_workbook.close()
-sg.popup('Open ' + fileName + ' file.')
+        times -= 1
+        time.sleep(seconds)
 
+    crypto_workbook.close()
+    sg.popup('Open ' + fileName + ' file.')
+
+except KeyboardInterrupt:
+    crypto_workbook.close()
+    sg.popup('Program finished by user.')
+
+missing = list()
 for coin in my_coins:
     if coin not in names:
-        print('Cryptocurrency ' + coin + ' Not found', '\n')
+        missing.append(coin)
 
-print('Program finished.')
+if len(missing) > 0:
+
+    layout = [[sg.Output(size=(60,10), pad=(30,0))],
+             [sg.Text('Press Show to see cryptocurrencies not found.', justification='center', size=(60,1))],
+             [sg.Text('Press Exit to finish.', justification='center', size=(60,1))],
+             [sg.Text(' '*46), sg.Button('Show'), sg.Button('Exit')]]
+
+    window = sg.Window('Cryptocurrencies not found.', layout, resizable=True)
+
+    while True:
+        event, values = window.read()
+
+        if event in (sg.WIN_CLOSED, 'Exit'):
+            break
+        if event == sg.WIN_CLOSED or event == 'Exit':
+            break
+
+        if event == 'Show':
+            for coin in missing:
+                print('Cryptocurrency ' + coin + ' Not found', '\n')
+
+    window.close()
