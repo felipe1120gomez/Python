@@ -1,8 +1,8 @@
-from requests import Request, Session
-from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
 import json
 import time
 import os
+from requests import Request, Session
+from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
 import xlsxwriter
 import PySimpleGUI as sg
 
@@ -35,7 +35,7 @@ while True:
             continue
 
         try:
-            if (values['-IN-'].isalpha()) != True:
+            if not (values['-IN-'].isalpha()):
                 raise ValueError("That is not a currency!")
 
         except:
@@ -65,7 +65,7 @@ layout = [[sg.Text('Enter the symbol of Cryptocurrency and the amount you owned.
 
 window = sg.Window('Cryptocurrency Portfolio', layout, resizable=True)
 
-my_portafolio = dict()
+my_portfolio = dict()
 while True:
     event, values = window.read()
 
@@ -77,7 +77,7 @@ while True:
     if event == 'Submit':
 
         try:
-            if (values['-IN-'].isalpha()) != True:
+            if not (values['-IN-'].isalpha()):
                 raise ValueError("That is not a Cryptocurrency!")
 
             if (len(values['-IN-'])) < 2:
@@ -94,7 +94,7 @@ while True:
             sg.popup('Invalid input', values['-NUM-'])
             continue
 
-        my_portafolio[values['-IN-'].upper()] = float(values['-NUM-'])
+        my_portfolio[values['-IN-'].upper()] = float(values['-NUM-'])
 
 
     if event == 'Save':
@@ -116,18 +116,19 @@ while True:
                 break
 
             if event == 'Show':
-                for key, value in my_portafolio.items():
+                for key, value in my_portfolio.items():
                     print('Coin: {}, Amount: {}'.format(key, value), '\n')
 
             if event == 'Go':
-                    window.close()
+                window.close()
 
 window.close()
 
 try:
     my_coins = list()
-    for key, value in my_portafolio.items():
-        if key not in my_coins : my_coins.append(key)
+    for key, value in my_portfolio.items():
+        if key not in my_coins:
+            my_coins.append(key)
 except:
     quit()
 
@@ -147,22 +148,22 @@ while True:
 
     if event == 'Submit':
         if float(values['-HR-'][0]) > 0.0:
-            choice = float(values['-HR-'][0])
-            sg.popup('The portfolio will be updated every ' + str(choice) + ' hours.')
-            repeat = True
-            times = 1
+            Choice = float(values['-HR-'][0])
+            sg.popup('The portfolio will be updated every ' + str(Choice) + ' hours.')
+            Repeat = True
+            Times = 1
         else:
             sg.popup('The portfolio will only be updated once.')
-            choice = 0
-            repeat = False
-            times = 1
+            Choice = 0
+            Repeat = False
+            Times = 1
 
         window.close()
 
 window.close()
 
 try:
-    times == 1
+    Times == 1
 except:
     quit()
 
@@ -191,14 +192,14 @@ while True:
             sg.popup('Invalid name', values['-IN-'])
             continue
 
-        fileName = values['-IN-'] + '.xlsx'
+        file_name = values['-IN-'] + '.xlsx'
 
         try:
-            if os.path.exists(fileName):
+            if os.path.exists(file_name):
                 raise ValueError("invalid name!")
         except:
-            sg.popup('File already exists', fileName)
-            fileName = None
+            sg.popup('File already exists', file_name)
+            file_name = None
             continue
 
         window.close()
@@ -206,12 +207,12 @@ while True:
 window.close()
 
 try:
-    sg.popup('Excel file', 'The name of the Excel file will be ' + fileName )
+    sg.popup('Excel file', 'The name of the Excel file will be ' + file_name )
 except:
     quit()
 
 #The Excel workbook is created.
-crypto_workbook = xlsxwriter.Workbook(fileName)
+crypto_workbook = xlsxwriter.Workbook(file_name)
 crypto_sheet = crypto_workbook.add_worksheet('CryptoData')
 bold = crypto_workbook.add_format({'bold': True})
 money = crypto_workbook.add_format({'num_format': '$#,##0'})
@@ -232,10 +233,10 @@ crypto_sheet.write('L1', 'LAST UPDATE', bold)
 crypto_sheet.write('M1', 'TOTAL PORFOLIO IN ' + conversion, bold)
 
 #The API is called.
-seconds = choice * 3600
+seconds = Choice * 3600
 names = list()
 try:
-    while repeat == True or times > 0:
+    while Repeat or Times > 0:
 
         url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
         parameters = {
@@ -274,12 +275,12 @@ try:
             print(data)
             quit()
 
-        if times > 0:
+        if Times > 0:
             row = 1
         else:
             row = len(names) + 2
 
-        portafolio_value = 0
+        Portfolio_value = 0
 
         #We iterate for each currency in the JSON file.
         file = data['data']
@@ -298,13 +299,13 @@ try:
             vol = convert['volume_24h']
 
             #We only add the currencies that are in the user's portfolio.
-            for key_1 in my_portafolio.keys():
+            for key_1 in my_portfolio.keys():
                 if key_1 == symbol:
-                    value = float(price) * float(my_portafolio[key_1])
+                    value = float(price) * float(my_portfolio[key_1])
 
                     crypto_sheet.write(row, 0, name)
                     crypto_sheet.write(row, 1, symbol)
-                    crypto_sheet.write(row, 2, my_portafolio[key_1], money)
+                    crypto_sheet.write(row, 2, my_portfolio[key_1], money)
                     crypto_sheet.write(row, 3, price, money)
                     crypto_sheet.write(row, 4, value, money)
                     crypto_sheet.write(row, 5, str('{:.2f}'.format(hour) + '%'))
@@ -315,14 +316,14 @@ try:
                     crypto_sheet.write(row, 10, active, money)
                     crypto_sheet.write(row, 11, last)
                     names.append(symbol)
-                    portafolio_value += value
+                    Portfolio_value += value
                     row += 1
 
         crypto_sheet.write(row, 0, '**')
-        crypto_sheet.write(row, 12, portafolio_value, money)
+        crypto_sheet.write(row, 12, Portfolio_value, money)
         names.append(' ')
 
-        if repeat == True:
+        if Repeat:
 
             layout = [[sg.Text('The portfolio has been updated.', justification='center', size=(35,1))],
                 [sg.Text('Do you want to end the program?', justification='center', size=(35,1))],
@@ -337,7 +338,7 @@ try:
                     break
 
                 if event == 'Yes':
-                    repeat = False
+                    Repeat = False
                     seconds = 1
                     window.close()
 
@@ -350,11 +351,11 @@ try:
         else:
             seconds = 1
 
-        times -= 1
+        Times -= 1
         time.sleep(seconds)
 
     crypto_workbook.close()
-    sg.popup('Open ' + fileName + ' file.')
+    sg.popup('Open ' + file_name + ' file.')
 
 except KeyboardInterrupt:
     crypto_workbook.close()
