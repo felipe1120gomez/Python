@@ -67,8 +67,8 @@ for line in js['data']:
             VALUES ( ?, ? )''', ( age, deaths) )
 
     elif gender == 'Female' :
-         cur.execute('''INSERT INTO DeathsFemale (Age, Deaths)
-             VALUES ( ?, ? )''', ( age, deaths) )
+        cur.execute('''INSERT INTO DeathsFemale (Age, Deaths)
+            VALUES ( ?, ? )''', ( age, deaths) )
 
 conn.commit()
 
@@ -94,7 +94,8 @@ deathsfemale = list()
 ages = list()
 for (age_id, item) in list(dictfemale.items()):
     age = item[0]
-    if age not in ages : ages.append(age)
+    if age not in ages:
+        ages.append(age)
     deathF = item[1]
     deathsfemale.append(deathF)
 
@@ -119,7 +120,7 @@ for gen in gender:
     elif gen == 'Male':
         for j in deathsmale:
             fhand.write(","+str(j))
-    fhand.write("]");
+    fhand.write("]")
 
 fhand.write("\n];\n")
 fhand.close()
