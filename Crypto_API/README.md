@@ -12,7 +12,7 @@ You can choose how often to get these data.
 
 1. Create an account at [CoinMarketCap](https://coinmarketcap.com/api/) to get an API key, this way you can use their API.
 
-2. Paste your API key on line 248 ('X-CMC_PRO_API_KEY') of the Portfolio.py file.
+2. Paste your API key on line 249 ('X-CMC_PRO_API_KEY') of the Portfolio.py file.
 
 3. You must install [xlsxwriter](https://pypi.org/project/XlsxWriter/)
 
