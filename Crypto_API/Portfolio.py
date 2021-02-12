@@ -35,7 +35,7 @@ while True:
             continue
 
         try:
-            if not (values['-IN-'].isalpha()):
+            if not values['-IN-'].isalpha():
                 raise ValueError("That is not a currency!")
 
         except:
@@ -77,7 +77,7 @@ while True:
     if event == 'Submit':
 
         try:
-            if not (values['-IN-'].isalpha()):
+            if not values['-IN-'].isalpha():
                 raise ValueError("That is not a Cryptocurrency!")
 
             if (len(values['-IN-'])) < 2:
@@ -148,22 +148,22 @@ while True:
 
     if event == 'Submit':
         if float(values['-HR-'][0]) > 0.0:
-            Choice = float(values['-HR-'][0])
-            sg.popup('The portfolio will be updated every ' + str(Choice) + ' hours.')
-            Repeat = True
-            Times = 1
+            CHOICE = float(values['-HR-'][0])
+            sg.popup('The portfolio will be updated every ' + str(CHOICE) + ' hours.')
+            repeat = True
+            times = 1
         else:
             sg.popup('The portfolio will only be updated once.')
-            Choice = 0
-            Repeat = False
-            Times = 1
+            CHOICE = 0
+            repeat = False
+            times = 1
 
         window.close()
 
 window.close()
 
 try:
-    Times == 1
+    times == 1
 except:
     quit()
 
@@ -192,14 +192,14 @@ while True:
             sg.popup('Invalid name', values['-IN-'])
             continue
 
-        file_name = values['-IN-'] + '.xlsx'
+        FILE_NAME = values['-IN-'] + '.xlsx'
 
         try:
-            if os.path.exists(file_name):
+            if os.path.exists(FILE_NAME):
                 raise ValueError("invalid name!")
         except:
-            sg.popup('File already exists', file_name)
-            file_name = None
+            sg.popup('File already exists', FILE_NAME)
+            FILE_NAME = None
             continue
 
         window.close()
@@ -207,12 +207,12 @@ while True:
 window.close()
 
 try:
-    sg.popup('Excel file', 'The name of the Excel file will be ' + file_name )
+    sg.popup('Excel file', 'The name of the Excel file will be ' + FILE_NAME )
 except:
     quit()
 
 #The Excel workbook is created.
-crypto_workbook = xlsxwriter.Workbook(file_name)
+crypto_workbook = xlsxwriter.Workbook(FILE_NAME)
 crypto_sheet = crypto_workbook.add_worksheet('CryptoData')
 bold = crypto_workbook.add_format({'bold': True})
 money = crypto_workbook.add_format({'num_format': '$#,##0'})
@@ -233,12 +233,12 @@ crypto_sheet.write('L1', 'LAST UPDATE', bold)
 crypto_sheet.write('M1', 'TOTAL PORFOLIO IN ' + conversion, bold)
 
 #The API is called.
-seconds = Choice * 3600
+seconds = CHOICE * 3600
 names = list()
 try:
-    while Repeat or Times > 0:
+    while repeat or times > 0:
 
-        url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
+        URL = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
         parameters = {
             'start': 1,
             'limit': 1000,#Only the first 1000 coins are taken into account.
@@ -253,7 +253,7 @@ try:
         session.headers.update(headers)
 
         try:
-            response = session.get(url, params = parameters)
+            response = session.get(URL, params = parameters)
 
         except (ConnectionError, Timeout, TooManyRedirects) as e:
             print(e)
@@ -275,7 +275,7 @@ try:
             print(data)
             quit()
 
-        if Times > 0:
+        if times > 0:
             row = 1
         else:
             row = len(names) + 2
@@ -323,7 +323,7 @@ try:
         crypto_sheet.write(row, 12, Portfolio_value, money)
         names.append(' ')
 
-        if Repeat:
+        if repeat:
 
             layout = [[sg.Text('The portfolio has been updated.', justification='center', size=(35,1))],
                 [sg.Text('Do you want to end the program?', justification='center', size=(35,1))],
@@ -338,7 +338,7 @@ try:
                     break
 
                 if event == 'Yes':
-                    Repeat = False
+                    repeat = False
                     seconds = 1
                     window.close()
 
@@ -351,11 +351,11 @@ try:
         else:
             seconds = 1
 
-        Times -= 1
+        times -= 1
         time.sleep(seconds)
 
     crypto_workbook.close()
-    sg.popup('Open ' + file_name + ' file.')
+    sg.popup('Open ' + FILE_NAME + ' file.')
 
 except KeyboardInterrupt:
     crypto_workbook.close()
