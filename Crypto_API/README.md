@@ -14,9 +14,11 @@ You can choose how often to get these data.
 
 2. Paste your API key on line 249 ('X-CMC_PRO_API_KEY') of the Portfolio.py file.
 
-3. You must install [xlsxwriter](https://pypi.org/project/XlsxWriter/)
+3. You must install [requests](https://pypi.org/project/requests/)
 
-4. You must install [PySimpleGUI](https://pypi.org/project/PySimpleGUI/)
+4. You must install [xlsxwriter](https://pypi.org/project/XlsxWriter/)
+
+5. You must install [PySimpleGUI](https://pypi.org/project/PySimpleGUI/)
 
 ## Steps
 
