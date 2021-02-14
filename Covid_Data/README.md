@@ -8,6 +8,6 @@ This program uses the API of the US National Center for Health Statistics and cr
 
 ## Steps
 
-1. Run the Covidage.py file on your CLI.
+1. Run the Covid_age.py file on your CLI.
 2. Running this file will create a SQLite database, and a JavaScript file.
 3. After running the program, open the gbar.htm file to see the generated graph in your browser.
