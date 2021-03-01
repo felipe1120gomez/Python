@@ -1,10 +1,10 @@
 import json
 import time
 import os
-from requests import Request, Session
-from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
 import xlsxwriter
 import PySimpleGUI as sg
+from requests import Request, Session
+from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
 
 #We obtain the user's data through a GUI.
 sg.theme('Dark Black 1')
