@@ -3,7 +3,7 @@ import time
 import os
 import xlsxwriter
 import PySimpleGUI as sg
-from requests import Request, Session
+from requests import Session
 from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
 
 #We obtain the user's data through a GUI.
@@ -26,21 +26,15 @@ while True:
 
     if event == 'Submit':
 
-        try:
-            if (len(values['-IN-'])) != 3:
-                raise ValueError("That is not a currency!")
-
-        except:
+        if (len(values['-IN-'])) != 3:
             sg.popup('Invalid input', values['-IN-'])
             continue
 
-        try:
-            if not values['-IN-'].isalpha():
-                raise ValueError("That is not a currency!")
 
-        except:
+        if not values['-IN-'].isalpha():
             sg.popup('Invalid input', values['-IN-'])
             continue
+
 
         conversion = values['-IN-'].upper()
         window.close()
@@ -76,14 +70,11 @@ while True:
 
     if event == 'Submit':
 
-        try:
-            if not values['-IN-'].isalpha():
-                raise ValueError("That is not a Cryptocurrency!")
+        if not values['-IN-'].isalpha():
+            sg.popup('Invalid input', values['-IN-'])
+            continue
 
-            if (len(values['-IN-'])) < 2:
-                raise ValueError("That is not a Cryptocurrency!")
-
-        except:
+        if (len(values['-IN-'])) < 2:
             sg.popup('Invalid input', values['-IN-'])
             continue
 
@@ -184,20 +175,13 @@ while True:
 
     if event == 'Submit':
 
-        try:
-            if (len(values['-IN-'])) < 1:
-                raise ValueError("invalid name!")
-
-        except:
+        if (len(values['-IN-'])) < 1:
             sg.popup('Invalid name', values['-IN-'])
             continue
 
         FILE_NAME = values['-IN-'] + '.xlsx'
 
-        try:
-            if os.path.exists(FILE_NAME):
-                raise ValueError("invalid name!")
-        except:
+        if os.path.exists(FILE_NAME):
             sg.popup('File already exists', FILE_NAME)
             FILE_NAME = None
             continue
@@ -280,7 +264,7 @@ try:
         else:
             row = len(names) + 2
 
-        Portfolio_value = 0
+        portfolio_value = 0
 
         #We iterate for each currency in the JSON file.
         file = data['data']
@@ -316,11 +300,11 @@ try:
                     crypto_sheet.write(row, 10, active, money)
                     crypto_sheet.write(row, 11, last)
                     names.append(symbol)
-                    Portfolio_value += value
+                    portfolio_value += value
                     row += 1
 
         crypto_sheet.write(row, 0, '**')
-        crypto_sheet.write(row, 12, Portfolio_value, money)
+        crypto_sheet.write(row, 12, portfolio_value, money)
         names.append(' ')
 
         if repeat:

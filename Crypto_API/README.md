@@ -12,7 +12,7 @@ You can choose how often to get these data.
 
 1. Create an account at [CoinMarketCap](https://coinmarketcap.com/api/) to get an API key, this way you can use their API.
 
-2. Paste your API key on line 249 ('X-CMC_PRO_API_KEY') of the Portfolio.py file.
+2. Paste your API key on line 233('X-CMC_PRO_API_KEY') of the portfolio.py file.
 
 3. You must install [requests](https://pypi.org/project/requests/)
 
@@ -22,6 +22,6 @@ You can choose how often to get these data.
 
 ## Steps
 
-1. Run the Portfolio.py file on your CLI.
+1. Run the portfolio.py file on your CLI.
 2. Enter the required information through the GUI.
 3. After running the program, open the Excel file to see your portfolio.
